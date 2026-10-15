@@ -1,0 +1,4 @@
+# Core lab (samples, warehouse, grounding, evaluation, tests): standard library only.
+# The dependencies below are needed ONLY for the optional cloud warehouse targets.
+psycopg2-binary>=2.9 ; extra == "warehouse"
+boto3>=1.34 ; extra == "warehouse"
