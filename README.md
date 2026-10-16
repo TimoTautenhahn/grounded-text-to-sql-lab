@@ -2,6 +2,13 @@
 
 A small, offline harness that stands up a real analytical SQL warehouse, builds the schema-grounding context a model needs, and scores text-to-SQL output by execution match against a gold question set.
 
+```text
+$ python run_eval.py --provider keyword
+Execution accuracy: 5/13 = 38.5%     # naive baseline, partial on purpose
+$ python run_eval.py --provider gold
+Execution accuracy: 13/13 = 100.0%   # harness self-test
+```
+
 ## Why
 
 Most text-to-SQL demos score models by comparing SQL strings, which is misleading: many different queries return the same answer, and a model can be marked wrong for a correct query or right for a lucky guess. The metric that matters is whether the generated SQL returns the right rows when it actually runs. That requires a real database to run against and a gold set whose answers are defined by execution, not by string shape. This lab provides both, with no credentials and no network, so results are reproducible on any machine.
