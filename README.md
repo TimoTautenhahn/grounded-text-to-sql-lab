@@ -62,11 +62,22 @@ python3 -m unittest discover -s tests -v   # tests
 
 No dependencies are needed for the core lab (standard library only). To use the optional cloud targets, `pip install psycopg2-binary boto3` and copy `.env.example` to `.env`.
 
-To evaluate a real model, implement a `CandidateProvider` (a callable taking the question and `grounding.schema_context(conn)`, returning SQL) and pass it to `evaluate(conn, provider)`.
+## Evaluate a real model
+
+A provider for any OpenAI-compatible chat API ships in `textsql/providers/openai_compatible.py`. It is configured only through the environment, so no key is stored in the repo. Copy `.env.example` to `.env` and set `OPENAI_API_KEY` (and `OPENAI_BASE_URL` for a non-OpenAI endpoint).
+
+```bash
+python3 run_eval.py --provider llm --model gpt-4o-mini
+python3 run_eval.py --provider llm --model model-a --model model-b   # compare, writes results/latest.md
+```
+
+Run it with your own key; results depend on the model, so no score is published here. The comparison writes a Markdown table to `results/latest.md`. Without a key the command prints a clear message and exits without a traceback.
+
+To wire in a different backend, implement a `CandidateProvider` (a callable taking the question and `grounding.schema_context(conn)`, returning SQL) and pass it to `evaluate(conn, provider)`.
 
 ## Limitations and next steps
 
 - The gold set is small and single-table-leaning; it covers common analytical patterns but is not a stress test of complex joins or window functions.
 - Execution match can accept a query that is correct on this dataset but not in general. Adding multiple data variants per question (perturbing the warehouse) would catch more of those.
-- No LLM provider is bundled; wiring one in is left to the caller by design.
+- The bundled provider targets OpenAI-compatible chat APIs; other backends need a small adapter implementing the same `CandidateProvider` call.
 - Next steps worth doing: an optional schema-linking step before generation, result canonicalisation for float rounding, and a difficulty breakdown by question tag.
